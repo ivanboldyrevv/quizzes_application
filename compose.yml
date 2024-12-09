@@ -1,0 +1,27 @@
+services:
+  app:
+    build: ./app
+    networks:
+      - q-app
+    ports:
+      - 8080:8080
+    volumes:
+      - ./app:/fastapi_app/:rw
+  
+  db:
+    image: postgres:latest
+    networks:
+      - q-app
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: quiz_db
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+networks:
+  q-app:
