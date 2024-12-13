@@ -1,31 +1,46 @@
+import os
 import uuid
-from typing import Annotated
-from fastapi import APIRouter, Depends
-from fastapi.security import OAuth2PasswordBearer
 
+from typing import Annotated
+
+import httpx
+from fastapi import APIRouter, Depends, Request
+from fastapi.security import OAuth2PasswordBearer
 from peewee import PostgresqlDatabase
+
+
 from schemas import QuizSchema, UserResponseSchema
 from models import Quiz, Question, Option
 
-from auth import validate_token
+# DATABASE_URI = os.getenv('DATABASE_URI')
 
+AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL")
 
 db = PostgresqlDatabase("quiz_db", user="postgres", password="pass", host="db", port="5432")
 db.connect()
 
 quiz = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http:localhost:8001/api/v1/oauth2/token/")
 
 
-@quiz.get("/test_jwt/")
-async def read_items(token: Annotated[str, Depends(oauth2_scheme)]):
+@quiz.post("/auth")
+def auth(token: Annotated[str, Depends(oauth2_scheme)]):
     return {"token": token}
 
 
-@quiz.get("/quizzes")
-async def get_quizzes(token: Annotated[str, Depends(oauth2_scheme)]):
-    await validate_token(token)
+@quiz.get("/authorize")
+def authorize(token: Annotated[str, Depends(oauth2_scheme)]):
+    headers = {"Authorization": f"Bearer {token}"}
+    response = httpx.post(
+        AUTH_SERVICE_URL + "verify_token",
+        headers=headers
+    )
+    return response.json()
 
+
+@quiz.get("/quizzes/")
+async def get_quizzes(request: Request):
+    print(request.headers)
     quizzes = []
 
     for quiz in Quiz.select():

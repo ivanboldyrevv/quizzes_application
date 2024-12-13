@@ -10,6 +10,5 @@ RUN pip install fastapi[standard]
 RUN pip install peewee
 RUN pip install psycopg2-binary
 RUN pip install pyjwt
-RUN pip install requests
 
-# CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
+# CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

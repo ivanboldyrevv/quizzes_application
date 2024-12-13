@@ -1,17 +1,30 @@
 services:
-  app:
-    build: ./app
-    networks:
-      - q-app
+  auth_service:
+    build: ./auth_
+    command: uvicorn main:app --reload --proxy-headers --host 0.0.0.0 --port 8000
     ports:
-      - 8080:8080
+      - 8001:8000
+    volumes:
+      - ./auth_:/fastapi_app/:rw
+    environment:
+      - DATABASE_URL=postgres://auth-dev:pass@auth-service-database:5434
+    depends_on:
+      - auth-service-database
+  
+  quizzes_service:
+    build: ./app
+    command: uvicorn main:app --reload --proxy-headers --host 0.0.0.0 --port 8000
+    ports:
+      - 8002:8000
     volumes:
       - ./app:/fastapi_app/:rw
+    environment:
+      - AUTH_SERVICE_URL=http://auth_service:8000/api/v1/oauth2/
+    depends_on:
+      - db
   
   db:
     image: postgres:latest
-    networks:
-      - q-app
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pass
@@ -21,7 +34,27 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  auth-service-database:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: auth-dev
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: auth-dev-db
+    ports:
+      - 5434:5432
+    volumes:
+      - auth-service-data:/var/lib/postgresql/data
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nginx_config.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - auth_service
+      - quizzes_service
+
 volumes:
   pgdata:
-networks:
-  q-app:
+  auth-service-data:

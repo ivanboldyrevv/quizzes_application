@@ -1,10 +1,6 @@
 from fastapi import FastAPI
-
-from auth import auth
-from quiz import quiz
+from service import quiz
 
 
-app = FastAPI()
-
-app.include_router(auth)
-app.include_router(quiz)
+app = FastAPI(openapi_url="/api/v1/quizzes/openapi.json", docs_url="/api/v1/quizzes/docs")
+app.include_router(quiz, prefix="/api/v1/quizzes")
