@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from service import auth
+
+from transport.handlers import auth_router
 
 
 app = FastAPI(openapi_url="/api/v1/oauth2/openapi.json", docs_url="/api/v1/oauth2/docs")
@@ -20,4 +21,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth, prefix="/api/v1/oauth2")
+app.include_router(auth_router, prefix="/api/v1/oauth2")

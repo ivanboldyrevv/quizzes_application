@@ -1,11 +1,11 @@
 services:
   auth_service:
-    build: ./auth_
+    build: ./auth
     command: uvicorn main:app --reload --proxy-headers --host 0.0.0.0 --port 8000
     ports:
       - 8001:8000
     volumes:
-      - ./auth_:/fastapi_app/:rw
+      - ./auth:/fastapi_app/:rw
     environment:
       - DATABASE_URL=postgres://auth-dev:pass@auth-service-database:5434
     depends_on:
