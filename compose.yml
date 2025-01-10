@@ -1,30 +1,34 @@
 services:
   auth_service:
     build: ./auth
-    command: uvicorn main:app --reload --proxy-headers --host 0.0.0.0 --port 8000
+    container_name: quiz-app.auth
+    # command: uvicorn main:app --reload --proxy-headers --host 0.0.0.0 --port 8000
     ports:
       - 8001:8000
     volumes:
-      - ./auth:/fastapi_app/:rw
+      - ./auth/src:/app
     environment:
       - DATABASE_URL=postgres://auth-dev:pass@auth-service-database:5434
     depends_on:
       - auth-service-database
   
   quizzes_service:
-    build: ./app
-    command: uvicorn main:app --reload --proxy-headers --host 0.0.0.0 --port 8000
+    build: ./backend
+    container_name: quiz-app.backend
+    # command: uvicorn main:app --reload --proxy-headers --host 0.0.0.0 --port 8000
     ports:
       - 8002:8000
     volumes:
-      - ./app:/fastapi_app/:rw
+      - ./backend/src:/app
     environment:
       - AUTH_SERVICE_URL=http://auth_service:8000/api/v1/oauth2/
+      - PYTHON_ENV=testing
     depends_on:
       - db
   
   db:
     image: postgres:latest
+    container_name: quiz-app.postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pass
@@ -36,6 +40,7 @@ services:
 
   auth-service-database:
     image: postgres:latest
+    container_name: quiz-app.auth_postgres
     environment:
       POSTGRES_USER: auth-dev
       POSTGRES_PASSWORD: pass
@@ -47,6 +52,7 @@ services:
 
   nginx:
     image: nginx:latest
+    container_name: quiz-app.nginx_proxy
     ports:
       - "8080:8080"
     volumes:

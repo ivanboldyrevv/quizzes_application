@@ -1,0 +1,78 @@
+.content_ {
+    width: 800px;
+    background-color: #f8f8f8;
+
+    /* border-style: solid; */
+    border-color: black;
+    border-style: dotted;
+    border-radius: 5px;
+
+    display: grid; 
+    grid-template-columns: 0.4fr 0.8fr 1.2fr 1fr 0.4fr; 
+    grid-template-rows: 10px 40px auto 50px;
+    gap: 35px 0px; 
+    grid-template-areas: 
+        ". . . . ."
+        ". question question question ."
+        ". options options options ."
+        ". . . next ."; 
+}
+
+.question { grid-area: question; }
+.options { grid-area: options; }
+.next { grid-area: next; justify-self: right;}
+
+.sign-container {
+    display: grid; 
+    grid-template-columns: 1fr 1fr 1fr; 
+    grid-template-rows: 1fr 1fr 1fr; 
+    gap: 20px 18px;  
+    grid-template-areas: 
+      ". navbar ."
+      ". sign-form ."
+      ". . ."; 
+}
+
+.sign-form { grid-area: sign-form; }
+
+.add-quiz-content {
+  display: grid; 
+  grid-template-columns: 1.8fr 0.1fr; 
+  grid-template-rows: 0.4fr 0.2fr auto 3.1fr 0.3fr; 
+  gap: 20px 18px; 
+  grid-template-areas: 
+    "quiz-name-form add-button"
+    "difficult-choose ."
+    "created-questions ."
+    "question-form ."
+    "submit-button ."; 
+}
+
+.submit-button {
+  grid-area: submit-button;
+  color: #fff !important;
+  background-color: #000 !important;
+}
+
+.question-form { grid-area: question-form; }
+.difficult-choose { grid-area: difficult-choose; }
+.created-questions { grid-area: created-questions; }
+.quiz-name-form { grid-area: quiz-name-form; }
+.add-button {
+  grid-area: add-button;
+  color: #fff !important;
+  background-color: #000 !important;
+}
+
+.black-button {
+  color: #fff !important;
+  background-color: #000 !important;
+}
+
+.black-text-form:focus {
+  outline-color: #000 !important;
+}
+
+.black-text-form:active {
+  border-color: #000;
+}
